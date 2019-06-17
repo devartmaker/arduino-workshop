@@ -25,7 +25,7 @@ void setup() {
   }
 
   myDFPlayer.setTimeOut(500);
-  myDFPlayer.volume(25); 
+  myDFPlayer.volume(20); 
 
   pinMode(lamp, OUTPUT);
 }

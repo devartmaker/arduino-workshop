@@ -1,7 +1,7 @@
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
 
-SoftwareSerial mp3Serial(2, 3);
+SoftwareSerial mp3Serial(2, 3); //RX, TX
 DFRobotDFPlayerMini mp3;
 
 boolean active = false;
@@ -10,7 +10,7 @@ float sensorValue = 1023.0f;
 void setup() {
   Serial.begin(9600);
 
-  for (int i = 3; i <= 12; i++) {
+  for (int i = 4; i <= 12; i++) {
     pinMode(i, OUTPUT);
   }
 
