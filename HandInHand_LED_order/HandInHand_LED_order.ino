@@ -4,25 +4,38 @@
 
 #define LED_DELAY 50
 
-SoftwareSerial mp3Serial(2, 3); //RX, TX
-DFRobotDFPlayerMini mp3;
-SimpleTimer timer;
+const int sensor = A0;
+const int mp3_rx = 2;
+const int mp3_tx = 3;
 
-boolean active = false;
-float sensorValue = 1023.0f;
-int current;
+int value = 1023;
+boolean touched = false;
+boolean state;
+unsigned long stopTime = 0;
+int current = 0;
+
+SoftwareSerial mp3Serial(mp3_rx, mp3_tx);
+DFRobotDFPlayerMini myDFPlayer;
+SimpleTimer timer;
 
 void setup() {
   Serial.begin(9600);
+  mp3Serial.begin(9600);
+
+  if (!myDFPlayer.begin(mp3Serial)) {
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    while(true);
+  }
+
+  myDFPlayer.setTimeOut(500);
+  myDFPlayer.volume(25); 
 
   for (int i = 4; i <= 12; i++) {
     pinMode(i, OUTPUT);
   }
-
-  mp3Serial.begin(9600);
-  mp3.begin(mp3Serial);
-
-  mp3.volume(25);
+  
   timer.setInterval(10, checkSensor);
   timer.setInterval(LED_DELAY, changeLED);
 }
@@ -32,16 +45,24 @@ void loop() {
 }
 
 void checkSensor() {
-  int value = analogRead(A0);
-  sensorValue += (value - sensorValue) * 0.1;
-  Serial.println(sensorValue);
+  int raw = analogRead(sensor);
+  value += (raw - value) * 0.1;
 
-  if (!active && sensorValue < 500) {
-    active = true;
-    mp3.next();
-  } else if (active && sensorValue > 800) {
-    active = false;
-    mp3.stop();
+  Serial.println(value);
+
+  if (!touched && value < 500) {
+    touched = true;
+
+    if (millis() - stopTime > 2000) {
+       myDFPlayer.next();
+    } else {
+       myDFPlayer.start();
+    }
+  } else if (touched && value >= 700) {
+    touched = false;
+    
+    myDFPlayer.pause();
+    stopTime = millis();
   }
 }
 
@@ -52,7 +73,7 @@ void changeLED() {
   }
 
   for (int i = 4; i <= 12; i++) {
-    if (active && i - 4 == current) {
+    if (touched && i - 4 == current) {
       digitalWrite(i, HIGH);
     } else {
       digitalWrite(i, LOW);
