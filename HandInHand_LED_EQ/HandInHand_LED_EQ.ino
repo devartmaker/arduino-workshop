@@ -28,7 +28,7 @@ void setup() {
   }
 
   myDFPlayer.setTimeOut(500);
-  myDFPlayer.volume(25); 
+  myDFPlayer.volume(20); 
 
   for (int i = 4; i <= 12; i++) {
     pinMode(i, OUTPUT);
@@ -46,9 +46,9 @@ void checkSensor() {
   int raw = analogRead(sensor);
   value += (raw - value) * 0.1;
 
-  Serial.println(value);
+  //Serial.println(value);
 
-  if (!touched && value < 500) {
+  if (!touched && value < 300) {
     touched = true;
 
     if (millis() - stopTime > 2000) {
@@ -56,7 +56,7 @@ void checkSensor() {
     } else {
        myDFPlayer.start();
     }
-  } else if (touched && value >= 700) {
+  } else if (touched && value >= 400) {
     touched = false;
     
     myDFPlayer.pause();
