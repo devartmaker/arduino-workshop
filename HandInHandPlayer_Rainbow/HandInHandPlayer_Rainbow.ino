@@ -57,7 +57,7 @@ void loop() {
 
 int getVolume() {
   int v = analogRead(volume);
-  v = map(v, 0, 1023, 0, 30);
+  v = map(v, 0, 1023, 1, 30);
   return v;
 }
 
