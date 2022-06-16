@@ -23,20 +23,20 @@ int rainbowIndex = 0;
 int brightness = 0;
 
 void setup() {
+  Serial.begin(9600);
+  mp3Serial.begin(9600);
+
+  while (!myDFPlayer.begin(mp3Serial)) {
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    delay(1000);
+  }
+  
   pinMode(A0, OUTPUT);
   pinMode(A2, OUTPUT);
   digitalWrite(A0, HIGH);
   digitalWrite(A2, LOW);
-  
-  Serial.begin(9600);
-  mp3Serial.begin(9600);
-
-  if (!myDFPlayer.begin(mp3Serial)) {
-    Serial.println(F("Unable to begin:"));
-    Serial.println(F("1.Please recheck the connection!"));
-    Serial.println(F("2.Please insert the SD card!"));
-    while (true);
-  }
 
   myDFPlayer.setTimeOut(500);
   changeVolume(getVolume());
